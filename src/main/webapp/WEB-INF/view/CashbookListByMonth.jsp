@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import = "java.util.*" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,12 +34,16 @@
       System.out.println(endDay +" <- endDay CaahBookListByMonth.jsp");
       System.out.println(endBlank +" <- endBlank CaahBookListByMonth.jsp");
       System.out.println(totalTd +" <- totalTd CaahBookListByMonth.jsp");
+      
+  	
    %>
+   
+  
    <h2><%=y%>년 <%=m%>월</h2>
-   <div>
-      <a href="<%=request.getContextPath()%>/CashbookListByMonthController?y=<%=y%>&m=<%=m-1%>" class="btn btn-primary">이전달</a>
-      <a href="<%=request.getContextPath()%>/CashbookListByMonthController?y=<%=y%>&m=<%=m+1%>" class="btn btn-primary">다음달</a>
+    <div>
+   		
    </div>
+ 
    <!-- 
       1) 이번날 1일의 요일 firstDayYoil -> startBlank -> 일 0, 월 1, 화 2, ... 토 6
       2) 이번달 마지막날짜 endDay
@@ -48,7 +53,7 @@
       5) 가계부 list
       6) 오늘 날짜
    -->
-   <table class="table table-bordered table-striped">
+   <table class="table table-bordered  table-striped">
       <thead>
          <tr>
             <th>일</th>
@@ -110,5 +115,20 @@
 			</tr>
       </tbody>
    </table>
+   <div class="container">
+      <a href="<%=request.getContextPath()%>/CashbookListByMonthController?y=<%=y%>&m=<%=m-1%>" class="btn btn-primary">이전달</a>
+      <a href="<%=request.getContextPath()%>/CashbookListByMonthController?y=<%=y%>&m=<%=m+1%>" class="btn btn-primary">다음달</a>
+      <a href="<%=request.getContextPath() %>/TagController" class="btn btn-primary">tag</a>
+
+   </div>
+   <div class="container pt-3">
+   		<a href="<%=request.getContextPath()%>/SelectMemberOneController?sessionMemberId=<%=session.getAttribute("sessionMemberId") %>"><%=session.getAttribute("sessionMemberId") %></a>님 반갑습니다.      
+   		<a href="<%=request.getContextPath()%>/LogOutController" class="btn btn-danger">로그 아웃</a>
+   </div>
+   	<div>
+		현재 접속자 수 : ${currentCount}
+		오늘(${stats.day}) 접속자 수 : ${stats.cnt} 
+		전체 접속자 수 : ${totalCount}
+	</div>
 </body>
 </html>

@@ -11,11 +11,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
 <body>
-		<table border="1">
+	<div class="container border p-3 my-3">
+		<table class="table table-hover">
 			<thead>
 				<tr>
 					<th>CashbookNo</th>
@@ -46,7 +48,8 @@
 				%>
 			</tbody>
 		</table>
-		<a href="<%=request.getContextPath() %>/DeleteCashBookController?cashbookNo=<%=cashbookNo%>">삭제</a>
-		<a href="<%=request.getContextPath() %>/UpdateCashBookController?cashbookNo=<%=cashbookNo%>">수정</a>
+		<a href="<%=request.getContextPath() %>/DeleteCashBookController?cashbookNo=<%=cashbookNo%>" class="btn btn-danger">삭제</a>
+		<a href="<%=request.getContextPath() %>/UpdateCashBookController?cashbookNo=<%=cashbookNo%>" class="btn btn-primary">수정</a>
+	</div>
 </body>
 </html>
