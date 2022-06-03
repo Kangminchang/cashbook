@@ -12,19 +12,17 @@ import java.util.Map;
 import vo.Cashbook;
 
 public class CashbookDao {
-	//�닔�젙1
+	//수정1
 	public int updateCashBook(Cashbook c) {
 		List<Cashbook> list =new ArrayList<>();
-		
-		
 		int row=0;
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		try {
 			Class.forName("org.mariadb.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/cashbook","root","java1234");
-			conn.setAutoCommit(false); //�옄�룞�쑝濡� 而ㅻ컠�릺�뒗 寃껋쓣 留됰뒗 肄붾뱶 
-			//�궘�젣 �떆 �쇅�옒�궎 �삤瑜섎줈 �씤�빐 hashtag �뀒�씠釉� 癒쇱� �궘�젣
+			conn.setAutoCommit(false); //자동으로 커밋되는 것을 막는 코드 
+			//삭제 시 외래키 오류로 인해 hashtag 테이블 먼저 삭제
 			String sql="UPDATE cashbook SET cash_date=?,kind=?,cash=?,memo=? WHERE cashbook_no=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setString(1, c.getCashDate());
@@ -44,7 +42,7 @@ public class CashbookDao {
 		}
 		return row;
 	}
-	//�궘�젣
+	//삭제
 	public int deleteCashbook(Cashbook c) {
 		int row=0;
 		Connection conn = null;
@@ -53,24 +51,24 @@ public class CashbookDao {
 		try {
 			Class.forName("org.mariadb.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/cashbook","root","java1234");
-			conn.setAutoCommit(false); //�옄�룞�쑝濡� 而ㅻ컠�릺�뒗 寃껋쓣 留됰뒗 肄붾뱶 
-			//�궘�젣 �떆 �쇅�옒�궎 �삤瑜섎줈 �씤�빐 hashtag �뀒�씠釉� 癒쇱� �궘�젣
+			conn.setAutoCommit(false); //자동으로 커밋되는 것을 막는 코드 
+			//삭제 시 외래키 오류로 인해 hashtag 테이블 먼저 삭제
 			String sql="DELETE FROM hashtag WHERE cashbook_no=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, c.getCashbookNo());
 			row=stmt.executeUpdate();
 			conn.commit();
-			//cashbook �뜲�씠�꽣 �궘�젣
+			//cashbook 데이터 삭제
 			String sql2="DELETE FROM cashbook WHERE cashbook_no=?";
 			stmt=conn.prepareStatement(sql2);
 			stmt.setInt(1, c.getCashbookNo());
 			row=stmt.executeUpdate();
 			conn.commit();
 			if(row==1) {
-				System.out.println("�궘�젣 �꽦怨�");
+				System.out.println("삭제 성공");
 				
 			}else {
-				System.out.println("�궘�젣 �떎�뙣");
+				System.out.println("삭제 실패");
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -84,7 +82,7 @@ public class CashbookDao {
 		return row;					
 		
 	}
-	//�긽�꽭蹂닿린
+	//상세보기
 	public List<Cashbook> selectCashbookOne(Cashbook c){
 		List<Cashbook> list= new ArrayList<Cashbook>();
 		Connection conn = null;
@@ -93,7 +91,7 @@ public class CashbookDao {
 		try {
 			Class.forName("org.mariadb.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/cashbook","root","java1234");
-			conn.setAutoCommit(false); //�옄�룞�쑝濡� 而ㅻ컠�릺�뒗 寃껋쓣 留됰뒗 肄붾뱶 
+			conn.setAutoCommit(false); //자동으로 커밋되는 것을 막는 코드 
 			String sql="SELECT cashbook_no cashbookNo,cash_date cashDate,kind,cash,memo,update_date updateDate,create_date createDate FROM cashbook WHERE cashbook_no=?";
 			stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, c.getCashbookNo());
@@ -107,6 +105,7 @@ public class CashbookDao {
 				cashbook.setMemo(rs.getString("memo"));
 				cashbook.setUpdateDate(rs.getString("updateDate"));
 				cashbook.setCreateDate(rs.getString("createDate"));
+				
 				list.add(cashbook);
 			}
 		}catch(Exception e) {
@@ -120,7 +119,7 @@ public class CashbookDao {
 		}
 		return list;
 	}
-	//�뜲�씠�꽣 �엯�젰
+	//데이터 입력
 	public void insertCashbook(Cashbook c,List<String> hashtag) {
 		List<String> list = new ArrayList<String>();
 		Connection conn = null;
@@ -128,24 +127,24 @@ public class CashbookDao {
 		ResultSet rs = null;
 		String sql = "INSERT INTO cashbook(cash_date,kind,cash,memo,update_date,create_date) VALUES(?,?,?,?,NOW(),NOW())";
 		try {
-			Class.forName("o-rg.mariadb.jdbc.Driver");
+			Class.forName("org.mariadb.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/cashbook","root","java1234");
-			conn.setAutoCommit(false); //�옄�룞�쑝濡� 而ㅻ컠�릺�뒗 寃껋쓣 留됰뒗 肄붾뱶 
-			//諛⑷툑 �깮�꽦�맂 �뻾�쓽 �궎媛믪쓣 select ex)select 諛⑷툑�엯�젰�븳 cashbook_no from cashbook
-			stmt = conn.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);//�몢踰덉㎏ 留ㅺ컻蹂��닔 �엯�젰�떆 insert臾� 肉먯씠�븘�땲�씪 selec臾몃룄 寃��깋�븳�떎.
+			conn.setAutoCommit(false); //자동으로 커밋되는 것을 막는 코드 
+			//방금 생성된 행의 키값을 select ex)select 방금입력한 cashbook_no from cashbook
+			stmt = conn.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);//두번째 매개변수 입력시 insert문 뿐이아니라 selec문도 검색한다.
 			stmt.setString(1,c.getCashDate());
 			stmt.setString(2, c.getKind());
 			stmt.setInt(3,c.getCash());
 			stmt.setString(4,c.getMemo());
 			stmt.executeUpdate(); //Insert
-			rs =stmt.getGeneratedKeys(); //Select 諛⑷툑�엯�젰�븳 cashbook_no
+			rs =stmt.getGeneratedKeys(); //Select 방금입력한 cashbook_no
 			int cashbookNo=0;
 			if(rs.next()) {
 				cashbookNo=rs.getInt(1);
 			}
 		
-			//hashtag瑜� �엯�젰�븯�뒗 肄붾뱶
-			for(String h: hashtag) { // hashtag媛믪씠 議댁옱�븷�븣留�
+			//hashtag를 입력하는 코드
+			for(String h: hashtag) { // hashtag값이 존재할때만
 				PreparedStatement stmt2 =null;
 				String sql2="INSERT INTO hashtag(cashbook_no,tag,create_date) VALUES(?,?,NOW())";
 				stmt2=conn.prepareStatement(sql2);
